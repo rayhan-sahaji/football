@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+backend/data/
+media/
+*.log
+.DS_Store
+Thumbs.db
+backend/data/auth.json
