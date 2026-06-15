@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: football-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: CORS_ORIGIN
+        sync: false
+
+  - type: static
+    name: football-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: football-backend
+          type: web
+          property: url
+      - key: VITE_WS_URL
+        value: wss://football-backend.onrender.com
