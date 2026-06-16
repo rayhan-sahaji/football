@@ -298,6 +298,13 @@ let liveStreams = loadJSON(STREAMS_FILE, [
     name: 'T Sports HD - Live',
     url: 'http://172.19.17.202:8090/hls/tsportshd3rd.m3u8',
     logo: '',
+    active: false,
+  },
+  {
+    id: 'stream-30',
+    name: 'Live Stream 30',
+    url: 'https://1nyaler.streamhostingcdn.top/stream/30/index.m3u8',
+    logo: '',
     active: true,
   }
 ])
