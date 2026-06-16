@@ -345,10 +345,16 @@ app.get('/api/hls-proxy', async (req, res) => {
       proxyRes.on('data', chunk => body += chunk)
       proxyRes.on('end', () => {
         const baseUrl = targetUrl.substring(0, targetUrl.lastIndexOf('/') + 1)
-        const rewritten = body.replace(/^(?!#)(.+\.ts.*)$/gm, (match) => {
-          const absolute = match.startsWith('http') ? match : baseUrl + match
-          return `/api/hls-proxy?url=${encodeURIComponent(absolute)}`
-        })
+        const proxyBase = `${req.protocol}://${req.get('host')}/api/hls-proxy`
+        const rewritten = body
+          .replace(/^(?!#)(.+\.ts.*)$/gm, (match) => {
+            const absolute = match.startsWith('http') ? match : baseUrl + match
+            return `${proxyBase}?url=${encodeURIComponent(absolute)}`
+          })
+          .replace(/URI="([^"]+)"/g, (match, uri) => {
+            const absolute = uri.startsWith('http') ? uri : baseUrl + uri
+            return `URI="${proxyBase}?url=${encodeURIComponent(absolute)}"`
+          })
         res.send(rewritten)
       })
     } else {
