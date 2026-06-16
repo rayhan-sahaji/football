@@ -332,7 +332,8 @@ app.get('/api/hls-proxy', async (req, res) => {
 
   try {
     const proxyRes = await new Promise((resolve, reject) => {
-      http.get(targetUrl, { timeout: 10000 }, resolve).on('error', reject)
+      const client = targetUrl.startsWith('https') ? https : http
+      client.get(targetUrl, { timeout: 10000 }, resolve).on('error', reject)
     })
     const ct = proxyRes.headers['content-type'] || 'application/octet-stream'
     res.set('Content-Type', ct)

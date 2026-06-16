@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Hls from 'hls.js'
+import { getApiUrl } from '../config'
 
 export default function VideoPlayer({ streamUrl, compact = false, filterStyle = '' }) {
   const videoRef = useRef(null)
@@ -16,7 +17,7 @@ export default function VideoPlayer({ streamUrl, compact = false, filterStyle = 
   const [fullscreen, setFullscreen] = useState(false)
   const [controlsVisible, setControlsVisible] = useState(true)
 
-  const proxyUrl = streamUrl ? `/api/hls-proxy?url=${encodeURIComponent(streamUrl)}` : null
+  const proxyUrl = streamUrl ? `${getApiUrl('/api/hls-proxy')}?url=${encodeURIComponent(streamUrl)}` : null
 
   useEffect(() => {
     const video = videoRef.current
