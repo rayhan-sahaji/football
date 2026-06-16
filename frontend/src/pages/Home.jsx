@@ -57,8 +57,8 @@ export default function Home() {
           fetch(getApiUrl('/api/schedule')).then(r => r.json()),
           fetch(getApiUrl('/api/streams')).then(r => r.json()),
         ])
-        setMatches(scheduleRes)
-        setStreams(streamsRes.filter(s => s.active))
+        setMatches(Array.isArray(scheduleRes) ? scheduleRes : [])
+        setStreams(Array.isArray(streamsRes) ? streamsRes.filter(s => s.active) : [])
       } catch { /* */ }
     }
     fetchData()
@@ -71,7 +71,7 @@ export default function Home() {
     ws.onmessage = (e) => {
       try {
         const msg = JSON.parse(e.data)
-        if (msg.type === 'schedule_update' && msg.matches) setMatches(msg.matches)
+        if (msg.type === 'schedule_update' && Array.isArray(msg.matches)) setMatches(msg.matches)
       } catch { /* */ }
     }
     return () => ws.close()

@@ -80,7 +80,7 @@ export default function Schedule() {
 
   useEffect(() => {
     const fetchMatches = async () => {
-      try { const res = await axios.get(getApiUrl('/api/schedule')); setMatches(res.data) } catch { /* */ }
+      try { const res = await axios.get(getApiUrl('/api/schedule')); setMatches(Array.isArray(res.data) ? res.data : []) } catch { /* */ }
     }
     fetchMatches()
     const interval = setInterval(fetchMatches, 5000)
@@ -92,7 +92,7 @@ export default function Schedule() {
     ws.onmessage = (e) => {
       try {
         const msg = JSON.parse(e.data)
-        if (msg.type === 'schedule_update' && msg.matches) {
+        if (msg.type === 'schedule_update' && Array.isArray(msg.matches)) {
           setMatches(msg.matches)
         }
       } catch { /* */ }
