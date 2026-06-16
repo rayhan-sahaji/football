@@ -4,7 +4,7 @@ import MatchSchedule from '../components/MatchSchedule'
 import useWebSocket from '../hooks/useWebSocket'
 import { getApiUrl } from '../config'
 
-const STREAM_URL = 'https://1nyaler.streamhostingcdn.top/stream/30/index.m3u8'
+const STREAM_URL = 'https://live.thebosstv.com:30443/dwlive/Somoy-TV/chunks.m3u8'
 const STREAM_NAME = 'Live Stream 30'
 
 const FLAG_URL = (code) => `https://flagcdn.com/w40/${code.toLowerCase()}.png`

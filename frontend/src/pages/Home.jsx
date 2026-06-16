@@ -44,7 +44,7 @@ const FEATURES = [
 
 export default function Home() {
   const [matches, setMatches] = useState([])
-  const STREAM_URL = 'https://1nyaler.streamhostingcdn.top/stream/30/index.m3u8'
+  const STREAM_URL = 'https://live.thebosstv.com:30443/dwlive/Somoy-TV/chunks.m3u8'
   const heroRef = useRef(null)
   const statsRef = useRef(null)
   const featuresRef = useRef(null)
