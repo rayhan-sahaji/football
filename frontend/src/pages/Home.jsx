@@ -44,7 +44,7 @@ const FEATURES = [
 
 export default function Home() {
   const [matches, setMatches] = useState([])
-  const [streams, setStreams] = useState([])
+  const STREAM_URL = 'https://1nyaler.streamhostingcdn.top/stream/30/index.m3u8'
   const heroRef = useRef(null)
   const statsRef = useRef(null)
   const featuresRef = useRef(null)
@@ -53,12 +53,8 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [scheduleRes, streamsRes] = await Promise.all([
-          fetch(getApiUrl('/api/schedule')).then(r => r.json()),
-          fetch(getApiUrl('/api/streams')).then(r => r.json()),
-        ])
+        const scheduleRes = await fetch(getApiUrl('/api/schedule')).then(r => r.json())
         setMatches(Array.isArray(scheduleRes) ? scheduleRes : [])
-        setStreams(Array.isArray(streamsRes) ? streamsRes.filter(s => s.active) : [])
       } catch { /* */ }
     }
     fetchData()
@@ -157,7 +153,7 @@ export default function Home() {
             <div className="relative">
               <div className="absolute -inset-4 bg-green-500/10 rounded-3xl blur-2xl"></div>
               <div className="relative">
-                <VideoPlayer streamUrl={streams[0]?.url || null} compact />
+                <VideoPlayer streamUrl={STREAM_URL} compact />
               </div>
             </div>
           </div>

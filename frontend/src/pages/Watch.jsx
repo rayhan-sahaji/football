@@ -4,6 +4,9 @@ import MatchSchedule from '../components/MatchSchedule'
 import useWebSocket from '../hooks/useWebSocket'
 import { getApiUrl } from '../config'
 
+const STREAM_URL = 'https://1nyaler.streamhostingcdn.top/stream/30/index.m3u8'
+const STREAM_NAME = 'Live Stream 30'
+
 const FLAG_URL = (code) => `https://flagcdn.com/w40/${code.toLowerCase()}.png`
 const FlagImg = ({ code, size = 32 }) => {
   if (!code) return null
@@ -13,8 +16,6 @@ const FlagImg = ({ code, size = 32 }) => {
 export default function Watch() {
   const [viewers, setViewers] = useState(0)
   const [liveMatch, setLiveMatch] = useState(null)
-  const [streams, setStreams] = useState([])
-  const [selectedStream, setSelectedStream] = useState(null)
   const ws = useWebSocket()
 
   useEffect(() => {
@@ -31,24 +32,15 @@ export default function Watch() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [scheduleRes, streamsRes] = await Promise.all([
-          fetch(getApiUrl('/api/schedule')).then(r => r.json()),
-          fetch(getApiUrl('/api/streams')).then(r => r.json()),
-        ])
-        const live = scheduleRes.find(m => m.status === 'live')
+        const scheduleRes = await fetch(getApiUrl('/api/schedule')).then(r => r.json())
+        const live = Array.isArray(scheduleRes) ? scheduleRes.find(m => m.status === 'live') : null
         setLiveMatch(live || null)
-        setStreams(streamsRes.filter(s => s.active))
-        if (!selectedStream && streamsRes.length > 0) {
-          setSelectedStream(streamsRes.find(s => s.active) || streamsRes[0])
-        }
       } catch { /* ignore */ }
     }
     fetchData()
     const interval = setInterval(fetchData, 10000)
     return () => clearInterval(interval)
   }, [])
-
-  const activeStream = selectedStream || streams[0]
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-4">
@@ -83,14 +75,12 @@ export default function Watch() {
       )}
 
       {/* Video Player */}
-      <VideoPlayer streamUrl={activeStream?.url || null} />
+      <VideoPlayer streamUrl={STREAM_URL} />
 
       {/* Stream Title & Info */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">
-            {activeStream?.name || 'Live Stream'}
-          </h1>
+          <h1 className="text-2xl font-bold text-white">{STREAM_NAME}</h1>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 text-gray-400">
@@ -107,29 +97,6 @@ export default function Watch() {
           </div>
         </div>
       </div>
-
-      {/* Stream Selector */}
-      {streams.length > 1 && (
-        <div className="bg-gray-900 rounded-2xl border border-gray-800 p-4">
-          <h3 className="text-sm font-bold text-gray-400 mb-3">Live Channels</h3>
-          <div className="flex gap-3 overflow-x-auto pb-1">
-            {streams.map(stream => (
-              <button
-                key={stream.id}
-                onClick={() => setSelectedStream(stream)}
-                className={`shrink-0 px-4 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer flex items-center gap-2 ${
-                  activeStream?.id === stream.id
-                    ? 'bg-green-600 text-white shadow-lg shadow-green-600/25'
-                    : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 border border-gray-700'
-                }`}
-              >
-                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                {stream.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       <MatchSchedule compact />
     </div>
