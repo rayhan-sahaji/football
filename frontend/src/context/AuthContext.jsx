@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
     fetch(getApiUrl('/api/auth/verify'), {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(r => r.text().then(t => { if (!r.ok || !t) throw new Error(); return JSON.parse(t) }))
       .then(() => setLoading(false))
       .catch(() => {
         localStorage.removeItem('admin_token')
@@ -30,11 +30,11 @@ export function AuthProvider({ children }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password }),
     })
-    if (!res.ok) {
-      const data = await res.json()
-      throw new Error(data.error || 'Login failed')
+    const text = await res.text()
+    if (!res.ok || !text) {
+      throw new Error(text ? JSON.parse(text).error : 'Server is waking up, please try again')
     }
-    const { token: newToken } = await res.json()
+    const { token: newToken } = JSON.parse(text)
     localStorage.setItem('admin_token', newToken)
     setToken(newToken)
   }
